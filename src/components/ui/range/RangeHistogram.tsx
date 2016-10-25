@@ -18,6 +18,10 @@ function isKeyStringValidDate(key_as_string) {
   return moment(key_as_string, moment.ISO_8601, true).isValid();
 }
 
+function getYear(key_as_string) {
+  return moment(key_as_string, moment.ISO_8601, true).year();
+}
+
 @PureRender
 export class RangeHistogram extends React.Component<any, {}> {
 
@@ -36,7 +40,7 @@ export class RangeHistogram extends React.Component<any, {}> {
     if (maxCount == 0) return null
 
     let bars = map(items, ({key, key_as_string, doc_count}) => {
-      const comparisonKey = isKeyStringValidDate(key_as_string) ? key_as_string : key;
+      const comparisonKey = isKeyStringValidDate(key_as_string) ? getYear(key_as_string) : key;
       const outOfBounds = (comparisonKey < minValue || comparisonKey > maxValue)
       return (
         <div className={bemBlocks.container('bar').state({'out-of-bounds': outOfBounds})}
