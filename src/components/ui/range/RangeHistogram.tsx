@@ -1,15 +1,21 @@
 import * as React from "react";
 
+
 import { PureRender } from "../../../"
 
 const block = require('bem-cn')
 
+const moment = require('moment')
 const maxBy = require("lodash/maxBy")
 const map = require("lodash/map")
 
 function computeMaxValue(items, field) {
   if (!items || items.length == 0) return 0
   return maxBy(items, field)[field]
+}
+
+function isKeyStringValidDate(key_as_string) {
+  return moment(key_as_string, moment.ISO_8601, true).isValid();
 }
 
 @PureRender
@@ -29,8 +35,9 @@ export class RangeHistogram extends React.Component<any, {}> {
     const maxCount = computeMaxValue(items, "doc_count")
     if (maxCount == 0) return null
 
-    let bars = map(items, ({key, doc_count}) => {
-      const outOfBounds = (key < minValue || key > maxValue)
+    let bars = map(items, ({key, key_as_string, doc_count}) => {
+      const comparisonKey = isKeyStringValidDate(key_as_string) ? key_as_string : key;
+      const outOfBounds = (comparisonKey < minValue || comparisonKey > maxValue)
       return (
         <div className={bemBlocks.container('bar').state({'out-of-bounds': outOfBounds})}
           key={key}
